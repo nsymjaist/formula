@@ -1,2 +1,3 @@
 # formula
-prototype of formula circle website 
+サークルwebページ試作
+
