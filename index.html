@@ -1,11 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>JAISTフォーミュラサークル</title>
+  <meta charset="UTF-8">
+  <title>安全なAIウェブサイト</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    #chat-box { border: 1px solid #ccc; padding: 15px; height: 300px; overflow-y: auto; margin-bottom: 10px; white-space: pre-wrap; }
+    input[type="text"] { width: 70%; padding: 10px; }
+    button { padding: 10px 20px; }
+  </style>
 </head>
 <body>
-    <h1>JAISTフォーミュラサークル</h1>
-    <p>制作中</p>
+  <h2>安全なAIウェブサイト（Vercel版）</h2>
+  <div id="chat-box"></div>
+  <input type="text" id="user-input" placeholder="メッセージを入力...">
+  <button id="send-btn">送信</button>
+
+  <script>
+    document.getElementById('send-btn').addEventListener('click', async () => {
+      const inputField = document.getElementById('user-input');
+      const chatBox = document.getElementById('chat-box');
+      const prompt = inputField.value;
+      if (!prompt) return;
+
+      chatBox.innerHTML += `<div><b>あなた:</b> ${prompt}</div>`;
+      inputField.value = '';
+      chatBox.innerHTML += `<div id="loading"><b>AI:</b> 考え中...</div>`;
+
+      try {
+        // ★ここが変更点：Googleではなく、自分のVercelサーバーにデータを送る
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+        
+        document.getElementById('loading').remove();
+        chatBox.innerHTML += `<div><b>AI:</b> ${data.text}</div><hr>`;
+      } catch (error) {
+        document.getElementById('loading').remove();
+        chatBox.innerHTML += `<div style="color:red;"><b>エラー:</b> 通信に失敗しました。</div><hr>`;
+      }
+    });
+  </script>
 </body>
 </html>
